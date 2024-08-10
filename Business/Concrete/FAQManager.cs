@@ -15,9 +15,9 @@ namespace Business.Concrete
             return new SuccessResult("Yeni Sual-Cavab elave olundu");
         }
 
-        public IResult Delete(FAQ entity)
+        public IResult Delete(int id)
         {
-            var checkAvailability = GetById(entity.Id);
+            var checkAvailability = GetById(id);
             if (checkAvailability.Success)
             {
                 var deleteFAQ = checkAvailability.Data;
@@ -44,9 +44,9 @@ namespace Business.Concrete
                 : new ErrorDataResult<FAQ>("Data tapilmadi");
         }
 
-        public IResult Update(FAQ faq)
+        public IResult Update(int id, FAQ faq)
         {
-            var updateFAQ = GetById(faq.Id).Data;
+            var updateFAQ = GetById(id).Data;
             if (updateFAQ != null)
             {
                 updateFAQ.Question = faq.Question;

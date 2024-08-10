@@ -12,8 +12,8 @@ namespace Business.Abstract
     public interface IBaseService<T> where T : class, IEntity, new() 
     {
         IResult Add(T entity);
-        IResult Update(T entity);
-        IResult Delete(T entity);
+        IResult Update(int id,T entity);
+        IResult Delete(int id);
         IDataResult<List<T>> GetAll();
         IDataResult<T> GetById(int id);
     }

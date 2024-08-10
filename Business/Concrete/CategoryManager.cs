@@ -19,9 +19,9 @@ namespace Business.Concrete
             return new ErrorResult("Ad uzunlugu 5-den kicik ola bilmez");
         }
 
-        public IResult Delete(Category category)
+        public IResult Delete(int id)
         {
-            var deleteCategory = GetById(category.Id).Data;
+            var deleteCategory = GetById(id).Data;
             if (deleteCategory != null)
             {
                 deleteCategory.IsDeleted = true;
@@ -33,7 +33,7 @@ namespace Business.Concrete
 
         public IDataResult<List<Category>> GetAll()
         {
-            List<Category> allCategories = _categoryDal.GetAll(c => c.IsDeleted == false);
+            var allCategories = _categoryDal.GetAll(c => c.IsDeleted == false);
             if (allCategories.Count > 0)
             {
                 return new SuccessDataResult<List<Category>>(allCategories, "butun kateqoriyalar gosterildi");
@@ -43,7 +43,7 @@ namespace Business.Concrete
 
         public IDataResult<Category> GetById(int id)
         {
-            Category selectedCategory = _categoryDal.Get(t => t.Id == id && t.IsDeleted == false);
+            var selectedCategory = _categoryDal.Get(t => t.Id == id && t.IsDeleted == false);
             if (selectedCategory != null)
             {
                 return new SuccessDataResult<Category>(selectedCategory, "Gonderilen id ile bagli kateqoriya ugurla tapildi");
@@ -51,9 +51,9 @@ namespace Business.Concrete
             return new ErrorDataResult<Category>(id + " ile bagli hec bir kateqoriya tapilmadi");
         }
 
-        public IResult Update(Category category)
+        public IResult Update(int id, Category category)
         {
-            var updateCategory = GetById(category.Id).Data;
+            var updateCategory = GetById(id).Data;
             if (updateCategory != null)
             {
                 updateCategory.CategoryName = category.CategoryName;

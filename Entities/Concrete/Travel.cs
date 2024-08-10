@@ -14,11 +14,5 @@ namespace Entities.Concrete
         public string LocationImgMap { get; set; }
         public string TravelDescription { get; set; }
         public decimal PricePerPerson { get; set; }
-
-        // Navigate many-to-many realation betwenn product and category.
-        // We use direct approach instead of adding new entity
-        public ICollection<Category> Categories { get; set; }
-
-
     }
 }

@@ -21,9 +21,9 @@ namespace Business.Concrete
 
         }
 
-        public IResult Delete(Travel trip)
+        public IResult Delete(int id)
         {
-            var deleteTrip = GetById(trip.Id).Data;
+            var deleteTrip = GetById(id).Data;
             if (deleteTrip != null)
             {
                 deleteTrip.IsDeleted = true;
@@ -49,9 +49,9 @@ namespace Business.Concrete
                 : new ErrorDataResult<Travel>(id + " ile bagli hec bir seyahet plani tapilmadi");
         }
 
-        public IResult Update(Travel trip)
+        public IResult Update(int id, Travel trip)
         {
-            var updateTravel = GetById(trip.Id).Data;
+            var updateTravel = GetById(id).Data;
             if (updateTravel != null)
             {
                 updateTravel.LocationName = trip.LocationName;
