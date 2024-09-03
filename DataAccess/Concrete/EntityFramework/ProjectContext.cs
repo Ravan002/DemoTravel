@@ -19,8 +19,8 @@ namespace DataAccess.Concrete.EntityFramework
 
             DbSet<About> Abouts { get; set; }
             DbSet<FAQ> FAQs { get; set; }
-            DbSet<FAQ> Travels { get; set; }
-            DbSet<FAQ> Categories { get; set; }
+            DbSet<Travel> Travels { get; set; }
+            DbSet<Category> Categories { get; set; }
 
 
     }

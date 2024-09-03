@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspect.Autofac.Secured;
+using Core.Helpers.IoC;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,12 +8,14 @@ namespace ECommerceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TravelController(ITravelService travelService) : ControllerBase
+    public class TravelController() : ControllerBase
     {
-        private readonly ITravelService _travelService = travelService;
+        private readonly ITravelService _travelService = ServiceTool.ServiceProvider.GetService<ITravelService>();
 
-        [HttpPost("Add")]
-        public IActionResult Add([FromBody] Travel travel)
+        [SecuredAspect("Admin,moderator")]
+        //[ValidationAspect]
+        [HttpPost("AddTravel")]
+        public IActionResult Add(Travel travel)
         {
             var result = _travelService.Add(travel);
             if (result.Success)
@@ -21,7 +25,7 @@ namespace ECommerceAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("GetById")]
+        [HttpGet("GetByIdTravel")]
         public IActionResult GetById([FromQuery] int id)
         {
             var result = _travelService.GetById(id);
