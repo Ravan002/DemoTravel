@@ -2,27 +2,30 @@
 using Business.BusinessAspect.Autofac.Secured;
 using Core.Helpers.IoC;
 using Entities.Concrete;
+using Entities.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TravelController() : ControllerBase
+    public class TravelController(ITravelService travelService) : ControllerBase
     {
-        private readonly ITravelService _travelService = ServiceTool.ServiceProvider.GetService<ITravelService>();
+        private readonly ITravelService _travelService = travelService;
 
-        [SecuredAspect("Admin,moderator")]
-        //[ValidationAspect]
         [HttpPost("AddTravel")]
-        public IActionResult Add(Travel travel)
+        public IActionResult Add(TravelDto travelDto)
         {
-            var result = _travelService.Add(travel);
+            if (travelDto == null)
+            {
+                return BadRequest();
+            }
+            var result = _travelService.Add(travelDto);
             if (result.Success)
             {
-                return Ok(result);
+                return Ok(travelDto);
             }
-            return BadRequest(result);
+            return BadRequest(travelDto);
         }
 
         [HttpGet("GetByIdTravel")]
@@ -67,6 +70,5 @@ namespace ECommerceAPI.Controllers
             }
             return BadRequest(result);
         }
-
     }
 }

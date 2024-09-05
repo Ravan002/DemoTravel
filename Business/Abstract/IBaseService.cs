@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-    public interface IBaseService<T> where T : class, IEntity, new() 
+    public interface IBaseService<T> where T : class,IEntity, new()
     {
         IResult Add(T entity);
-        IResult Update(int id,T entity);
         IResult Delete(int id);
         IDataResult<List<T>> GetAll();
         IDataResult<T> GetById(int id);
+        IResult Update(int id, T entity);
     }
 }

@@ -1,25 +1,40 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspect.Autofac.Secured;
+using Business.Validation.FluentValidation;
+using Core.Aspects.Autofac.Validation.FluentValidation;
+using Core.Constants;
+using Core.Helpers.Business;
 using Core.Helpers.Results.Abstract;
 using Core.Helpers.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dto;
 
 namespace Business.Concrete
 {
-    public class TravelManager(ITravelDal travelDal) : ITravelService
+    public class TravelManager(ITravelDal travelDal, IAddFileHelperService addFileHelperService) : ITravelService
     {
         private readonly ITravelDal _travelDal = travelDal;
+        private readonly IAddFileHelperService _addFileHelperService = addFileHelperService;          
 
-        public IResult Add(Travel trip)
+
+        [SecuredAspect("Admin,Moderator")]
+        [ValidationAspect<TravelDto>(typeof(TravelDtoValidator))]
+        public IResult Add(TravelDto travelDto)
         {
-            if (trip.LocationName.Length > 3)
+            var fileName = _addFileHelperService.AddFile(travelDto.TravelPicture, FolderNames.ImagesFolder);
+            Travel travel = new()
             {
-                _travelDal.Add(trip);
-                return new SuccessResult("Yeni seyahet elave olundu");
-            }
-            return new ErrorResult("Bu adda olke yoxdur");
-
+                LocationImgMap= FolderNames.ImagesFolderWithSlash + fileName,
+                TravelPicture = FolderNames.ImagesFolderWithSlash + fileName,
+                LocationName= travelDto.LocationName,
+                PricePerPerson=travelDto.PricePerPerson,
+                TravelDescription= travelDto.TravelDescription,
+            };
+            _travelDal.Add(travel);
+            return new SuccessResult("Yeni seyahet elave olundu");
         }
+
 
         public IResult Delete(int id)
         {
