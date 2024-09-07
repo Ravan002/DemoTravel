@@ -14,7 +14,7 @@ namespace Core.Helpers.Business
             var fileFolder = Path.Combine(wwwFolder, fileName);
             using var fileStream = new FileStream(fileFolder, FileMode.CreateNew);
             formFile.CopyTo(fileStream);
-            return fileName;
+            return "/"+folderName+"/"+fileName;
         }
     }
 }

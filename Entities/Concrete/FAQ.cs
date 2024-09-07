@@ -11,6 +11,6 @@ namespace Entities.Concrete
     {
         public string Question { get; set; }
         public string Answer { get; set; }
-        public string IconUrl { get; set; }
+        public string? IconUrl { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Entities.Concrete;
+﻿using Core.Helpers.Results.Abstract;
+using Entities.Concrete;
+using Entities.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,5 @@ namespace Business.Abstract
 {
     public interface IFAQService : IBaseService<FAQ>
     {
-
     }
 }

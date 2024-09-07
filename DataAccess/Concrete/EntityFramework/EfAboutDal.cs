@@ -11,6 +11,6 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfAboutDal : BaseRepository<About,ProjectContext>, IAboutDal
     {
-
+        
     }
 }

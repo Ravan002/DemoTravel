@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspect.Autofac.Secured;
 using Business.Validation.FluentValidation;
 using Core.Aspects.Autofac.Validation.FluentValidation;
@@ -12,25 +13,17 @@ using Entities.Dto;
 
 namespace Business.Concrete
 {
-    public class TravelManager(ITravelDal travelDal, IAddFileHelperService addFileHelperService) : ITravelService
+    public class TravelManager(ITravelDal travelDal, IMapper mapper) : ITravelService
     {
         private readonly ITravelDal _travelDal = travelDal;
-        private readonly IAddFileHelperService _addFileHelperService = addFileHelperService;          
+        private readonly IMapper _mapper = mapper;
 
 
-        [SecuredAspect("Admin,Moderator")]
+        //[SecuredAspect("Admin,Moderator")]
         [ValidationAspect<TravelDto>(typeof(TravelDtoValidator))]
         public IResult Add(TravelDto travelDto)
         {
-            var fileName = _addFileHelperService.AddFile(travelDto.TravelPicture, FolderNames.ImagesFolder);
-            Travel travel = new()
-            {
-                LocationImgMap= FolderNames.ImagesFolderWithSlash + fileName,
-                TravelPicture = FolderNames.ImagesFolderWithSlash + fileName,
-                LocationName= travelDto.LocationName,
-                PricePerPerson=travelDto.PricePerPerson,
-                TravelDescription= travelDto.TravelDescription,
-            };
+            Travel travel = _mapper.Map<Travel>(travelDto);
             _travelDal.Add(travel);
             return new SuccessResult("Yeni seyahet elave olundu");
         }

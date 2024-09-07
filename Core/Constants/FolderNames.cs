@@ -9,6 +9,5 @@ namespace Core.Constants
     public static class FolderNames
     {
         public static string ImagesFolder = "images";
-        public static string ImagesFolderWithSlash= "/images/";
     }
 }

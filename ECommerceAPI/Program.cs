@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Business.Abstract;
+using Business.AutoMapper;
 using Business.Concrete;
 using Business.Dependency.autofac;
 using Core.DependencyResolvers;
@@ -27,7 +28,8 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory()).Conf
 {
     builder.RegisterModule<AutofacBusinessModule>();
 });
-var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>()!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -42,11 +44,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
         };
     });
-builder.Services.AddDependencyResolvers(new ICoreModule[]
-            {
+builder.Services.AddDependencyResolvers(
+            [
                 new CoreModule(),
 
-            });
+            ]);
 
 var app = builder.Build();
 

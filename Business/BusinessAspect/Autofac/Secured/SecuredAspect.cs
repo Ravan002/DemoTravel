@@ -12,16 +12,10 @@ using System.Threading.Tasks;
 
 namespace Business.BusinessAspect.Autofac.Secured
 {
-    public class SecuredAspect : MethodInterception
+    public class SecuredAspect(string roles) : MethodInterception
     {
-        private string[] _roles;
-        private IHttpContextAccessor _httpContextAccessor;
-
-        public SecuredAspect(string roles)
-        {
-            _roles=roles.Split(',');
-            _httpContextAccessor = ServiceTool.ServiceProvider.GetService<IHttpContextAccessor>();
-        }
+        private readonly string[] _roles = roles.Split(',');
+        private readonly IHttpContextAccessor _httpContextAccessor = ServiceTool.ServiceProvider.GetService<IHttpContextAccessor>()!;
 
         protected override void OnBefore(IInvocation invocation)
         {
