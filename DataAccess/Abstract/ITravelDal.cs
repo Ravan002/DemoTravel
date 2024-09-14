@@ -1,5 +1,7 @@
 ﻿using Core.DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dto.CategoryDtos;
+using Entities.Dto.TravelDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,7 @@ namespace DataAccess.Abstract
 {
     public interface ITravelDal : IBaseRepository<Travel>
     {
-
+        List<CategoryDto> GetCategoriesByTravelId(int travelId);
+        List<TravelImageDto> GetImagesByTravelId(int travelId);
     }
 }

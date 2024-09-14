@@ -1,35 +1,32 @@
 ﻿using Business.Abstract;
-using Entities.Concrete;
+using Entities.Dto;
 using Entities.DTO.TravelDTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TravelController(ITravelService travelService) : ControllerBase
+    public class AboutController(IAboutService aboutService) : ControllerBase
     {
-        private readonly ITravelService _travelService = travelService;
+        private readonly IAboutService _aboutService = aboutService;
 
-        [HttpPost("AddTravel")]
-        public IActionResult Add(TravelDto travelDto)
+        [HttpPost("AddAbout")]
+        public IActionResult Add(AboutDto aboutDto)
         {
-            if (travelDto == null)
-            {
-                return BadRequest();
-            }
-            var result = _travelService.Add(travelDto);
+            var result = _aboutService.Add(aboutDto);
             if (result.Success)
             {
-                return Ok(travelDto);
+                return Ok(aboutDto);
             }
-            return BadRequest(travelDto);
+            return BadRequest(aboutDto);
         }
 
         [HttpGet("GetByIdTravel")]
         public IActionResult GetById([FromQuery] int id)
         {
-            var result = _travelService.GetById(id);
+            var result = _aboutService.GetById(id);
             if (result.Success)
             {
                 return Ok(result);
@@ -40,17 +37,7 @@ namespace ECommerceAPI.Controllers
         [HttpGet("GetAll")]
         public IActionResult GetAll()
         {
-            var result = _travelService.GetAll();
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-        [HttpGet("GetTravelWithDetail")]
-        public IActionResult GetTravelWithDetail([FromQuery] int id)
-        {
-            var result = _travelService.GetTravelWithDetail(id);
+            var result = _aboutService.GetAll();
             if (result.Success)
             {
                 return Ok(result);
@@ -59,9 +46,9 @@ namespace ECommerceAPI.Controllers
         }
 
         [HttpPut("Update")]
-        public IActionResult Update([FromQuery] int id, TravelDto travel)
+        public IActionResult Update([FromQuery] int id, AboutDto aboutDto)
         {
-            var result = _travelService.Update(id, travel);
+            var result = _aboutService.Update(id, aboutDto);
             if (result.Success)
             {
                 return Ok(result);
@@ -71,7 +58,7 @@ namespace ECommerceAPI.Controllers
         [HttpPut("Delete")]
         public IActionResult Delete([FromQuery] int id)
         {
-            var result = _travelService.Delete(id);
+            var result = _aboutService.Delete(id);
             if (result.Success)
             {
                 return Ok(result);

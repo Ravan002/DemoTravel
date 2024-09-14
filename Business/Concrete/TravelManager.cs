@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using Business.Abstract;
-using Business.BusinessAspect.Autofac.Secured;
 using Business.Validation.FluentValidation;
 using Core.Aspects.Autofac.Validation.FluentValidation;
-using Core.Constants;
-using Core.Helpers.Business;
 using Core.Helpers.Results.Abstract;
 using Core.Helpers.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
-using Entities.Dto;
+using Entities.DTO.TravelDTOs;
 
 namespace Business.Concrete
 {
@@ -57,16 +54,34 @@ namespace Business.Concrete
                 : new ErrorDataResult<Travel>(id + " ile bagli hec bir seyahet plani tapilmadi");
         }
 
-        public IResult Update(int id, Travel trip)
+        public IDataResult<TravelDetailDto> GetTravelWithDetail(int id)
+        {
+            var result = GetById(id);
+            var selectedTrip = result.Data;
+            if (selectedTrip != null)
+            {
+                var categories = _travelDal.GetCategoriesByTravelId(id);
+                var images = _travelDal.GetImagesByTravelId(id);
+                TravelDetailDto travelDetailDto = _mapper.Map<TravelDetailDto>(selectedTrip);
+                travelDetailDto.Categories = categories;
+                travelDetailDto.Images = images;
+                return new SuccessDataResult<TravelDetailDto>(travelDetailDto, "Ugurla data geldi");
+            }
+            return new ErrorDataResult<TravelDetailDto>(result.Message);
+
+        }
+
+        [ValidationAspect<TravelDto>(typeof(TravelDtoValidator))]
+        public IResult Update(int id, TravelDto trip)
         {
             var updateTravel = GetById(id).Data;
             if (updateTravel != null)
             {
-                updateTravel.LocationName = trip.LocationName;
+                _mapper.Map(trip, updateTravel);
                 _travelDal.Update(updateTravel);
                 return new SuccessResult("Ugurla update olundu");
             }
-            return new ErrorResult();
+            return new ErrorResult("Ugursuz emeliyyat");
         }
     }
 }

@@ -1,11 +1,6 @@
 ﻿using Core.Helpers.Results.Abstract;
 using Entities.Concrete;
-using Entities.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Entities.DTO.TravelDTOs;
 
 namespace Business.Abstract
 {
@@ -15,6 +10,8 @@ namespace Business.Abstract
         IResult Delete(int id);
         IDataResult<List<Travel>> GetAll();
         IDataResult<Travel> GetById(int id);
-        IResult Update(int id, Travel entity);
+        IResult Update(int id, TravelDto entity);
+        IDataResult<TravelDetailDto> GetTravelWithDetail(int id);
+        // getAllbycategory
     }
 }

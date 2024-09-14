@@ -1,20 +1,28 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Business.Validation.FluentValidation;
+using Core.Aspects.Autofac.Validation.FluentValidation;
 using Core.Helpers.Results.Abstract;
 using Core.Helpers.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dto;
+using Entities.DTO.TravelDTOs;
 
 namespace Business.Concrete
 {
-    public class FAQManager(IFAQDal faqDal) : IFAQService
+    public class FAQManager(IFAQDal faqDal, IMapper mapper) : IFAQService
     {
         private readonly IFAQDal _faqDal = faqDal;
-        public IResult Add(FAQ entity)
+        private readonly IMapper _mapper = mapper;
+
+        [ValidationAspect<FAQDto>(typeof(FAQDtoValidator))]
+        public IResult Add(FAQDto fAQDto)
         {
-            _faqDal.Add(entity);
+            var faq = _mapper.Map<FAQ>(fAQDto);
+            _faqDal.Add(faq);
             return new SuccessResult("Yeni Sual-Cavab elave olundu");
         }
-
         public IResult Delete(int id)
         {
             var checkAvailability = GetById(id);
@@ -44,13 +52,12 @@ namespace Business.Concrete
                 : new ErrorDataResult<FAQ>("Data tapilmadi");
         }
 
-        public IResult Update(int id, FAQ faq)
+        public IResult Update(int id, FAQDto faqDto)
         {
             var updateFAQ = GetById(id).Data;
             if (updateFAQ != null)
             {
-                updateFAQ.Question = faq.Question;
-                updateFAQ.Answer = faq.Answer;
+                _mapper.Map(faqDto, updateFAQ);
                 _faqDal.Update(updateFAQ);
                 return new SuccessResult("Ugurla update olundu");
             }

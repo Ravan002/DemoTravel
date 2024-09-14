@@ -1,13 +1,13 @@
-﻿using Entities.Abstract;
+﻿using Core.Entities.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Concrete
+namespace Entities.Dto
 {
-    public class FAQ : BaseEntity
+    public class FAQDto : IDto
     {
         public string Question { get; set; }
         public string Answer { get; set; }

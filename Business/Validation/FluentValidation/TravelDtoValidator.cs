@@ -1,4 +1,4 @@
-﻿using Entities.Dto;
+﻿using Entities.DTO.TravelDTOs;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -12,13 +12,24 @@ namespace Business.Validation.FluentValidation
     {
         public TravelDtoValidator()
         {
-            RuleFor(t => t.TravelPicture).NotEmpty().WithMessage("Bos gonderile bilmez");
-            RuleFor(t => t.TravelPicture.FileName).Must(EndsWithImageExtension).WithMessage("File sekil formatinda olmalidi");
+            RuleFor(t => t.PricePerPerson)
+                .NotEmpty().WithMessage("Bos gonderile bilmez")
+                .GreaterThan(0).WithMessage("qiymet 0-dan boyuk olmalidir")
+                .NotNull();
+            RuleFor(t => t.TravelPicture)
+                .NotEmpty().WithMessage("Bos gonderile bilmez")
+                .NotNull();
+            RuleFor(t => t.TravelPicture.FileName)
+                .Must(EndsWithImageExtension).WithMessage("File sekil formatinda olmalidi");
+            RuleFor(t => t.LocationImgMap)
+                .NotEmpty().WithMessage("Bos gonderile bilmez")
+                .NotNull();
+            RuleFor(t => t.LocationImgMap.FileName)
+                .Must(EndsWithImageExtension).WithMessage("File sekil formatinda olmalidi");
         }
-
         private bool EndsWithImageExtension(string arg)
         {
-            return arg.EndsWith("png");
+            return arg.EndsWith("png")|| arg.EndsWith("jpeg") || arg.EndsWith("jpg");
         }
     }
 }

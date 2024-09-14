@@ -7,16 +7,12 @@ namespace ECommerceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(IAuthService authService) : ControllerBase
     {
-        private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
+        private readonly IAuthService _authService = authService;
 
-        [HttpPost("Reegister")]
-        public IActionResult Register(RegisterDto userRegisterDto)
+        [HttpPost("Register")]
+        public ActionResult Register(RegisterDto userRegisterDto)
         {
             var userExists = _authService.UserExists(userRegisterDto.Email);
             if(!userExists.Success)

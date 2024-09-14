@@ -1,34 +1,38 @@
 ﻿using Core.Entites.Concrete;
 using Core.Extensions;
 using Core.Helpers.Security.Encryption;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text;
 
 namespace Core.Helpers.Security.JWT
 {
     public class JwtHelper : ITokenHelper
     {
-        private IConfiguration _configuration { get; }
+        public IConfiguration Configuration { get; }
+
+        private DateTime _expirationDate;
+        private TokenOptions _tokenOptions;
+
+
         public JwtHelper(IConfiguration configuration)
         {
-            _configuration = configuration;
-            _configuration.GetSection("TokenOptions").Get<TokenOptions>();
+            Configuration = configuration;
+            _tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
         }
 
-        private TokenOptions _tokenOptions;
-        private DateTime _expirationDate;
-
-        public AccessToken CreateAccessToken(User user, List<OperationClaim> operationClaims)
+        public AccessToken CreateAccessToken(User user, List<OperationClaim> opeartionClaims)
         {
-            _expirationDate = DateTime.UtcNow.AddMinutes(_tokenOptions.AccessTokenExpiration);
+            _expirationDate = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
             var signingCredentials = SigningCredentialsHelper.CreateSigningCredential(securityKey);
-            var jwt = CreateJwtSecurityToken(_tokenOptions, signingCredentials, user, operationClaims);
-            var jwtSecurityHandler = new JwtSecurityTokenHandler();
+            var jwt = CreateJwtSecurityToken(_tokenOptions, user, signingCredentials, opeartionClaims);
+            var jwtSecurityHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
             var token = jwtSecurityHandler.WriteToken(jwt);
-
 
             return new AccessToken
             {
@@ -37,39 +41,31 @@ namespace Core.Helpers.Security.JWT
             };
         }
 
-        private SecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, SigningCredentials signingCredentials, User user, List<OperationClaim> operationClaims)
+        private System.IdentityModel.Tokens.Jwt.JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, Microsoft.IdentityModel.Tokens.SigningCredentials signingCredentials, List<OperationClaim> opeartionClaims)
         {
-            var jwtSecurityToken = new JwtSecurityToken(
-               issuer: tokenOptions.Issuer,
-               audience: tokenOptions.Audience,
-               expires: _expirationDate,
-               notBefore: DateTime.UtcNow,
-               signingCredentials: signingCredentials,
-               claims: SetClaims(user, operationClaims)
-                );
+            var jwtSecurityToken = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(
+                 issuer: tokenOptions.Issuer,
+                 audience: tokenOptions.Audience,
+                 expires: _expirationDate,
+                 notBefore: DateTime.Now,
+                 claims: SetClaims(user, opeartionClaims),
 
+                 signingCredentials: signingCredentials
+                );
             return jwtSecurityToken;
         }
 
-        private static List<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
+        private static IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
         {
-            List<Claim> claims = [];
-            claims.AddName($"{user.FirstName} {user.LastName}");
+
+            var claims = new List<Claim>();
             claims.AddNameIdentifier(user.Id.ToString());
             claims.AddEmail(user.Email);
+            claims.AddName($"{user.FirstName} {user.LastName}");
             claims.AddRoles(operationClaims.Select(c => c.Name).ToArray());
-            //    [
-            //    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            //    new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-            //    new Claim(ClaimTypes.Email, user.Email),
-            //    ];
-
-            //foreach (var claim in operationClaims)
-            //{
-            //    claims.Add(new Claim(ClaimTypes.Role, claim.Name));
-            //}
-
+            //var userIdentity = new ClaimsIdentity(claims);
             return claims;
+
         }
     }
 }

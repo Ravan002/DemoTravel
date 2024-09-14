@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Entities.Concrete
 {
-    public class FAQ : BaseEntity
+    public class TravelImage : BaseEntity
     {
-        public string Question { get; set; }
-        public string Answer { get; set; }
+        public int TravelId { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

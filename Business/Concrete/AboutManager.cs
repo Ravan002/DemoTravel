@@ -1,17 +1,25 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
+using Business.Validation.FluentValidation;
+using Core.Aspects.Autofac.Validation.FluentValidation;
 using Core.Helpers.Results.Abstract;
 using Core.Helpers.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dto;
 
 namespace Business.Concrete
 {
-    public class AboutManager(IAboutDal aboutDal) : IAboutService
+    public class AboutManager(IAboutDal aboutDal, IMapper mapper) : IAboutService
     {
         private readonly IAboutDal _aboutDal = aboutDal;
-        public IResult Add(About entity)
+        private readonly IMapper _mapper = mapper;
+
+        [ValidationAspect<AboutDto>(typeof(AboutDtoValidator))]
+        public IResult Add(AboutDto entity)
         {
-            _aboutDal.Add(entity);
+            About about = _mapper.Map<About>(entity);
+            _aboutDal.Add(about);
             return new SuccessResult("Şəxs hakkindaki melumatlar ugurla elave olundu");
         }
 
@@ -29,7 +37,7 @@ namespace Business.Concrete
 
         public IDataResult<List<About>> GetAll()
         {
-            var result = _aboutDal.GetAll();
+            var result = _aboutDal.GetAll(a => a.IsDeleted == false);
             if (result.Count > 0)
             {
                 return new SuccessDataResult<List<About>>(result, "ugurlu emeliyyat");
@@ -39,7 +47,7 @@ namespace Business.Concrete
 
         public IDataResult<About> GetById(int id)
         {
-            var result = _aboutDal.Get(a => a.Id == id);
+            var result = _aboutDal.Get(a => a.Id == id && a.IsDeleted == false);
             if (result != null)
             {
                 return new SuccessDataResult<About>(result, "gonderile id-li data tapildi");
@@ -47,12 +55,13 @@ namespace Business.Concrete
             return new ErrorDataResult<About>(result, "Hecbir data tapilmadi");
         }
 
-        public IResult Update(int id, About entity)
+        [ValidationAspect<AboutDto>(typeof(AboutDtoValidator))]
+        public IResult Update(int id, AboutDto entity)
         {
             var updateAbout = GetById(id).Data;
             if (updateAbout != null)
             {
-                updateAbout.Surname = entity.Surname;
+                _mapper.Map(entity, updateAbout);
                 _aboutDal.Update(updateAbout);
                 return new SuccessResult("Ugurla update olundu");
             }
